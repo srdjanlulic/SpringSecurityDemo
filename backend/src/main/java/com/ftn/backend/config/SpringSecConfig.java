@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -41,17 +42,19 @@ public class SpringSecConfig extends WebSecurityConfigurerAdapter {
     }
  
     @Autowired
+    @DependsOn("daoAuthenticationProvider")
     public void configureAuthManager(AuthenticationManagerBuilder authenticationManagerBuilder){
         authenticationManagerBuilder.authenticationProvider(authenticationProvider);
     }
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-           httpSecurity
-                .authorizeRequests().antMatchers("/", "/api/auth/login").permitAll()
+    	 httpSecurity.cors();
+         httpSecurity
+                .authorizeRequests().antMatchers("/", "/api/auth/login", "/api/users/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .logout().permitAll();
- 
+                .logout().permitAll().and()
+         .httpBasic();
         httpSecurity.csrf().disable();
         httpSecurity.headers().frameOptions().disable();
     }
@@ -65,5 +68,7 @@ public class SpringSecConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
+	
+
  
 }

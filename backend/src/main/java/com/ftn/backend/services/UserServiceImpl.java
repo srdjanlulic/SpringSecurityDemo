@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService{
 	private EncryptionService encryptionService;
 	
 	@Override
-	public List<?> listAll() {
+	public List<User> listAll() {
 		List<User> users = new ArrayList<>();
         userRepository.findAll().forEach(users::add); //Java 8 Magija :)
         return users;
