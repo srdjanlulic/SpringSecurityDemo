@@ -12,19 +12,23 @@ import org.springframework.util.StringUtils;
 import com.ftn.backend.security.JwtTokenProvider;
 
 /**
- * Class which purpose is to accept token from front, parse the token and return user id.
+ * Klasa koja ima svrhu prihvatanja korisnickog tokena i parsiranja korisnickih informacija iz njega
+ * 
+ * @author Srdjan Lulic
  *
  */
 @Service
 public class TokenService {
+	
+	
 	@Autowired
 	JwtTokenProvider tokenProvider;
 	
 	
 	/**
-	 * Function for extracting user id from authorization header.
+	 * Funkcija za ekstrakciju korisnickog id-a iz Authorization header-a
 	 * @param authorizationHeader
-	 * @return user id as Long
+	 * @return user id kao Long
 	 */
 	public Long extractUserIdFromAuthorizationHeader(String authorizationHeader) {
 		String token = authorizationHeader.split(" ")[1];
@@ -32,18 +36,19 @@ public class TokenService {
 	}
 	
 	/**
-	 * Function for extracting user id from token
+	 * Funkcija za ekstrakciju korisnickog ID-a iz tokena
 	 * @param token
-	 * @return user id as Long
+	 * @return user id kao Long
 	 */
 	public Long extractUserIdFromToken(String token) {
 		return tokenProvider.getUserIdFromJWT(token);
 	}
 	
 	/**
-	 * Function which accesses and parses the Authorization header extracting the JWT token
+	 * 
+	 * Funkcija koja pristupa korisnickom zahtevu i parsira Authorization header kako bi izvukla JWT.
 	 * @param request
-	 * @return JWT token as String
+	 * @return JWT token kao String
 	 */
 	public String getJwtFromRequest(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");

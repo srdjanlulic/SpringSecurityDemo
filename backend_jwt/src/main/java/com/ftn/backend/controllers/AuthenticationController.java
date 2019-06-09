@@ -19,10 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.backend.dtos.AuthTokenDto;
 import com.ftn.backend.dtos.LoginFormDTO;
-import com.ftn.backend.model.User;
+import com.ftn.backend.security.JwtTokenProvider;
+import com.ftn.backend.services.TokenService;
 import com.ftn.backend.services.UserService;
 import com.ftn.backend.utils.HttpUtils;
 
+/**
+ * REST kontroler za upravljanje autentifikcionim endpoint-ovima. 
+ * @author Srdjan Lulic
+ *
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("api/auth")
@@ -34,6 +40,17 @@ public class AuthenticationController {
 	@Autowired
 	UserService userService;
 	
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+    
+    @Autowired
+    private TokenService tokenService;
+	
+    /**
+     * Endpoint za login
+     * @param loginForm (JSON objekat sa username i password vrednostima)
+     * @return generisani JWT token
+     */
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody LoginFormDTO loginForm){
 
@@ -43,12 +60,15 @@ public class AuthenticationController {
 		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		
-		//Izvlacenje informacija o korisniku koji pokusava da se uloguje
-		UserDetails principal = (UserDetails)authentication.getPrincipal();
-		AuthTokenDto authTokenDto = new AuthTokenDto(HttpUtils.getBasicAuthToken(loginForm.getUsername(), loginForm.getPassword()));
+		String jwt = tokenProvider.generateToken(authentication);
+		AuthTokenDto authTokenDto = new AuthTokenDto(jwt);
 		return new ResponseEntity<>(authTokenDto, HttpStatus.OK);
 	}
 	
+	/**
+	 * Logout opcija za JWT nema smisla osim u slucaju uvodjenja kesiranja tokena koji su odjavljeni i proveravanje istih
+	 * prilikom svakog zahteva.
+	 * @return Status 200*/
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

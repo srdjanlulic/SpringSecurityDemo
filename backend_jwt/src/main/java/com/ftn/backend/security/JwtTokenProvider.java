@@ -15,10 +15,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 
 /**
- * The purpose of this class is to encapsulate all actions concerning the Json Web Token which are generating the token, 
- * exctracting necessary data from the token, as well as validating the token using the signing key. 
- * @author Nikola Skrobonja
- *
+ * Svha ove klase je da enkapsulira sve akcije vezane za JSON Web Token, koje podrazumevaju generisanje tokena sa 
+ * raznim parametrima, validaciju, ekstrakciju parametara iz tokena i sl.
+ * @author Srdjan Lulic
  */
 @Component
 public class JwtTokenProvider {
@@ -28,24 +27,30 @@ public class JwtTokenProvider {
     private String jwtSecret;
     @Value("${app.jwtExpirationInMs}")
     private int jwtExpirationInMs;
+
     
     /**
-     * Function for generating JWT token using user details and setting issued date and expiration date(expiration time 
-     * defined in static resources). Signature algorithm used is hs512.
-     * @param authentication UsernamePasswordAuthenticationToken object which holds user credentials.
-     * @return JWT token as String
+     * Funkcija za generisanje JWT tokena koriscenjem user details i setovanje vremena izdavanja i vremena isticanja tokena
+     * na osnovu propertija setovanog u statickim resursima. Koristi se hs512 signature algoritam
+     * @param authentication - UserNamePasswordAuthenticationToken objekat koji sadrzi korisnicke kredencijale
+     * @return JWT token kao string
      */
     public String generateToken(Authentication authentication) {
     	
-    	CustomPrincipalUser principal = (CustomPrincipalUser)authentication.getPrincipal();
+    	CustomPrincipalUser user = (CustomPrincipalUser)authentication.getPrincipal();
     	
     	Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
         
         return Jwts.builder()
-                .setSubject(Long.toString(principal.getUser().getId()))
-                .claim("ROLE", 1)
-                .setIssuedAt(new Date())
+        		/*Enkodovanje ID-a kao najznacajnijeg atributa u JWT*/
+                .setSubject(Long.toString(user.getUser().getId()))
+                
+                /*Razliciti custom claims-i mogu da se enkoduju u token i cupaju pri svakom requestu*/
+                .claim("ROLE", "ROLE_USER")
+                
+                /*Setovanje vremena izdavanja i isticanja*/
+                .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
@@ -53,9 +58,9 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Function for extracting user id from token
+     * Funkcija za ekstrakciju korisnickog ID-a iz tokena.
      * @param token
-     * @return user id as Long
+     * @return user id kao Long
      */
     public Long getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser()
@@ -66,9 +71,9 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Function for exctracting role from JWT token
+     * Funkcija za ekstrakciju role iz tokena (nepotrebno sada ali zanimljiva tema za prosirenje)
      * @param token
-     * @return role name as a String
+     * @return role name kao string (trenutno podrzava ekstrakciju samo jedne role)
      */
     public Long getRoleFromJWT(String token) {
     	Claims claims = Jwts.parser()
@@ -80,9 +85,9 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Function for exctracting expiration date from JWT token
+     * Funkcija za ekstrakciju roka vazenja iz JWT tokena
      * @param token
-     * @return expiration date as Date
+     * @return rok upotrebe tokena kao datum
      */
     public Date getExpirationDateFromJWT(String token) {
     	Claims claims = Jwts.parser()
@@ -94,9 +99,9 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Function for validating token using signing key
-     * @param authToken token value to be validated
-     * @return true if valid otherwise false
+     * Funkcija za validaciju tokena upotrebom kljuca
+     * @param token
+     * @return true ako je token validan, false ako nije
      */
     public boolean validateToken(String authToken) {
         try {

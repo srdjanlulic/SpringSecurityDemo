@@ -13,24 +13,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ftn.backend.model.User;
 import com.ftn.backend.repositories.UserRepository;
-import com.ftn.backend.services.CustomUserDetailsService;
 import com.ftn.backend.services.TokenService;
 
 import io.jsonwebtoken.ExpiredJwtException;
 
+/**
+ * Filter klasa koja se primenjuje prilikom rukovanja korisnickim zahtevima. 
+ * Implementira <code>OncePerRequestFilter</code> interfejs i preklapa metodu <code>doFilterInternal</code>
+ * koja u ovom slucaju pre svakog korisnickog zahteva proverava validnost i postojanje korisnickog tokena.
+ * @author Srdjan Lulic
+ *
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	@Autowired
 	private JwtTokenProvider tokenProvider;
 	
 	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
+	private UserDetailsService userDetailsService;
 	
 	@Autowired
 	private UserRepository userRepo;
@@ -41,10 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 	
+
 	/**
-	 * Filter which validates the token and checks if it's in the blacklist. If the token is expired or in the blacklist, 
-	 * a ResponseEntity with code GONE 410 is returned to the client. If the token isn't valid for any other reason or
-	 * there is an authentication failure, the client will receive code UNAUTHORIZED 401.
+	 * Filter koji validira token. Ukoliko je token istekao vraca se status kod 410 (GONE). Ukoliko token nije validan 
+	 * iz bilo kog drugog razloga klijentu se kao odgovor vraca neautorizovani status kod 401 - UNAUTHORIZED.
 	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -56,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Integer userId = tokenProvider.getUserIdFromJWT(jwt).intValue();
                 User u = userRepo.findById(userId).get();
                 
-                CustomPrincipalUser userDetails = (CustomPrincipalUser) customUserDetailsService.loadUserByUsername(u.getUsername());
+                CustomPrincipalUser userDetails = (CustomPrincipalUser) userDetailsService.loadUserByUsername(u.getUsername());
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 		userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

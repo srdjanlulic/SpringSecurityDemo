@@ -5,6 +5,12 @@ import javax.validation.constraints.Size;
 
 import lombok.Data;
 
+/**
+ * Login Data Transfer Object koji se koristi za prosledjivanje korisnickog imena i lozinke
+ * prilikom autentifikacije
+ * @author Srdjan Lulic
+ *
+ */
 @Data
 public class LoginFormDTO {
 	

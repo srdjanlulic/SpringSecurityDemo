@@ -23,6 +23,11 @@ import com.ftn.backend.model.User;
 import com.ftn.backend.services.UserService;
 import com.ftn.backend.utils.HttpUtils;
 
+/**
+ * REST kontroler za upravljanje autentifikcionim endpoint-ovima. 
+ * @author Srdjan Lulic
+ *
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("api/auth")
@@ -34,6 +39,13 @@ public class AuthenticationController {
 	@Autowired
 	UserService userService;
 	
+	
+    /**
+     * Endpoint za login
+     * @param loginForm (JSON objekat sa username i password vrednostima)
+     * @return generisani Base64 string u formatu username:password (moze da se cuva u okviru session storage-a ili da se 
+     * generise novi prilikom svakog poziva)
+     */
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody LoginFormDTO loginForm){
 
@@ -43,12 +55,17 @@ public class AuthenticationController {
 		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		
-		//Izvlacenje informacija o korisniku koji pokusava da se uloguje
+		/*Izvlacenje informacija o korisniku koji pokusava da se uloguje*/
 		UserDetails principal = (UserDetails)authentication.getPrincipal();
 		AuthTokenDto authTokenDto = new AuthTokenDto(HttpUtils.getBasicAuthToken(loginForm.getUsername(), loginForm.getPassword()));
 		return new ResponseEntity<>(authTokenDto, HttpStatus.OK);
 	}
 	
+	/**
+	 * Endpoint koji nema svrhu sa samostalnom basic autentifikacijom, medjutim u slucaju prosirenja poslovne logike moze biti 
+	 * od znacaja.
+	 * @return Status 200
+	 */
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

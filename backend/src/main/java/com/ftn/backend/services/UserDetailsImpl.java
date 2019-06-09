@@ -6,7 +6,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
+/**
+ * Implementacija UserDetails interfejsa koji se enkapsulira u instanca <code>Authentication</code> objekata
+ * u okviru Spring Security konfiguracije.
+ * @author Srdjan Lulic
+ *
+ */
 public class UserDetailsImpl implements UserDetails {
 
 	private Collection<SimpleGrantedAuthority> authorities;

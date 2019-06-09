@@ -13,7 +13,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.ftn.backend.model.User;
 import com.google.common.base.Optional;
 
-public class CustomPrincipalUser implements UserDetails{
+/**
+ * Implementacija UserDetails interfejsa koji se enkapsulira u instanca <code>Authentication</code> objekata
+ * u okviru Spring Security konfiguracije.
+ * @author Srdjan Lulic
+ *
+ */
+public class CustomPrincipalUser implements UserDetails {
 	private User user;
 	
 
@@ -30,7 +36,7 @@ public class CustomPrincipalUser implements UserDetails{
 	}
 	@Override
 	public String getPassword() {
-		return user.getPassword().toString();
+		return user.getEncryptedPassword().toString();
 	}
 	@Override
 	public boolean isAccountNonExpired() {

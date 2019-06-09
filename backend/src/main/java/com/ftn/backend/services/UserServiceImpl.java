@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 import com.ftn.backend.model.User;
 import com.ftn.backend.repositories.UserRepository;
 
+/**
+ * Implementacija CRUD servisnog interfejsa za manipulaciju <code>User</code> entitetima.
+ * 
+ * @author Srdjan Lulic
+ */
 @Service("userService")
 public class UserServiceImpl implements UserService{
 
