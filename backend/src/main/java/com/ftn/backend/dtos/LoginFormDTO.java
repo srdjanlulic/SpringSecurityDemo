@@ -11,7 +11,7 @@ import lombok.Data;
  * @author Srdjan Lulic
  *
  */
-@Data
+@Data /*Lombok anotacija*/
 public class LoginFormDTO {
 	
 	@NotNull

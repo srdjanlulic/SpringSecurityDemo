@@ -61,11 +61,7 @@ public class AuthenticationController {
 		return new ResponseEntity<>(authTokenDto, HttpStatus.OK);
 	}
 	
-	/**
-	 * Endpoint koji nema svrhu sa samostalnom basic autentifikacijom, medjutim u slucaju prosirenja poslovne logike moze biti 
-	 * od znacaja.
-	 * @return Status 200
-	 */
+	
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

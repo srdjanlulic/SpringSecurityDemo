@@ -19,11 +19,11 @@ import com.google.common.base.Optional;
  * @author Srdjan Lulic
  *
  */
-public class CustomPrincipalUser implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 	private User user;
 	
 
-	public CustomPrincipalUser(User user) {
+	public UserDetailsImpl(User user) {
 		super();
 		this.user = user;
 	}

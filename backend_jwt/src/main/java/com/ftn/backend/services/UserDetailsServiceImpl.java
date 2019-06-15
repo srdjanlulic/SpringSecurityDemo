@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.ftn.backend.model.User;
-import com.ftn.backend.security.CustomPrincipalUser;
+import com.ftn.backend.security.UserDetailsImpl;
 
 @Service("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
               "No user found with username: "+ username);
         }
 		
-		return new CustomPrincipalUser(user);
+		return new UserDetailsImpl(user);
 	}
 
 }

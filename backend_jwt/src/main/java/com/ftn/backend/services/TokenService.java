@@ -1,8 +1,5 @@
 package com.ftn.backend.services;
 
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;

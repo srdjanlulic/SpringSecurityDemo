@@ -7,8 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,11 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private UserRepository userRepo;
 	
 	@Autowired
-	private TokenService tokenService;
-	
-	
-	private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-	
+	private TokenService tokenService;	
 
 	/**
 	 * Filter koji validira token. Ukoliko je token istekao vraca se status kod 410 (GONE). Ukoliko token nije validan 
@@ -63,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Integer userId = tokenProvider.getUserIdFromJWT(jwt).intValue();
                 User u = userRepo.findById(userId).get();
                 
-                CustomPrincipalUser userDetails = (CustomPrincipalUser) userDetailsService.loadUserByUsername(u.getUsername());
+                UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(u.getUsername());
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 		userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
